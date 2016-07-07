@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Lab2</title>
+        <style type = "text/css">
+			span {color:Gold; }
+			#body {background:DarkBlue; color:white} 
+			#fieldset {width:300px;  border-color:white; border-width:3px; margin:auto; margin-top:150px;}	
+			#fields{text-align:center; }
+			#checkButton {background-color:white;}
+		</style>
+		
+		<script>
+         
+		window.addEventListener("load", start, false);	
+			
+		function start(){ //sets up the page and buttons
+			var error = " ";
+			var submitButton = document.getElementById("submitButton")
+			submitButton.addEventListener("click", submitButtonPressed, false);
+			};
+					
+		function submitButtonPressed(){  //this function runs when the submit button is pressed
+			var firstName = document.getElementById("firstName").value;
+			var lastName = document.getElementById("lastName").value;
+			var studentIdField = document.getElementById("studentIdField").value;
+			var biographyField = document.getElementById("biographyField").value;
+			var firstLetters = firstName.split('');
+			var lastLetters = lastName.split('');
+			document.getElementById("error").textContent = "";
+			
+			if(firstName !== ""){  //runs firstName through nameCheck() 
+			
+				if(nameCheck(firstLetters)){ //the name is not in the proper format
+					document.getElementById("firstName").style.backgroundColor="Cyan";
+					document.getElementById("error").textContent += "*First name must start with an upper case letter and contain only letters.  \n";
+				}
+				else{ //the error was fixed
+					document.getElementById("firstName").style.backgroundColor="white";	
+				}
+			}
+			else{ //the field is blank
+					document.getElementById("firstName").style.backgroundColor="Cyan";
+					document.getElementById("error").textContent += "*Must include first name. \n ";
+			}
+						
+			if(lastName !==""){ //runs lastName through nameCheck 
+			
+				if(nameCheck(lastLetters)){ //the name is not in the proper format
+					document.getElementById("lastName").style.backgroundColor="Cyan";
+					document.getElementById("error").textContent += "*Last name must start with an upper case letter and contain only letters. \n";
+				}
+				else{ //the error was fixed
+				document.getElementById("lastName").style.backgroundColor="white";
+				} //end outside if
+			} //end if
+			else{ //the field is blank
+					document.getElementById("lastName").style.backgroundColor="Cyan";
+					document.getElementById("error").textContent += "*Must include last name.  \n";
+			} //end else
+								
+			studentIdCheck(studentIdField);
+			
+			var biography = biographyField.split(" ");  //seperates the biography textArea into an array of words
+			biographyCheck(biographyField);
+			
+			if(document.getElementById("error").textContent == ""){  //if the error message is empty show the alert
+				document.getElementById("body").style.backgroundColor = "DarkBlue";
+				alert("Submission successful.\n First name: " +firstName + " \n Last name: " +lastName + "\n Student ID: " +studentIdField + " \n Biography: " +biographyField);
+			}
+			else{  //if the error message is not empty then there was errors so change the background
+				changeBackground();
+			}
+			
+			};	//end submitbuttonpressed()
+			
+			function changeBackground(){
+				document.getElementById("body").style.backgroundColor = "DodgerBlue";
+			};
+			
+			function nameCheck(name){   
+				var firstLetter = name[0].charCodeAt(0);
+				if( firstLetter < 65 || firstLetter > 90 ){		//checks if first letter if capital
+								
+								return true;
+							} //end if
+							else{  //checks if all the rest of the letters are lowercase
+							for(var i =1;i<name.length;i++){  
+								var keyCode = name[i].charCodeAt(0);
+									if( keyCode < 97 || keyCode > 122){
+										
+										return true;
+									} //end else if
+						}//end for loop
+					}//end else
+				};//end nameCheck()
+				
+				function studentIdCheck(studentId){  //checks that the id field is correct
+					if(studentId.length != 9){
+						document.getElementById("studentIdField").style.backgroundColor="Cyan";
+						document.getElementById("error").textContent += "*Student ID must be nine numbers.\n ";
+					}
+					else{ //change it back to white if it was fixed
+						document.getElementById("studentIdField").style.backgroundColor="white";
+					}
+				}
+				
+				function biographyCheck(biography){
+					if(biography.length>25 ){ //if theres more than 25 words in the biography field
+						document.getElementById("biographyField").style.backgroundColor="Cyan";
+						document.getElementById("error").textContent += "*Biography must contain only less than 25 words.\n";
+					}
+					if(biography.length==0){ //the field is empty
+						document.getElementById("biographyField").style.backgroundColor="Cyan";
+						document.getElementById("error").textContent += "*Must include biography\n";
+					}
+					else{ //change it back to white if it was fixed
+						document.getElementById("biographyField").style.backgroundColor="white";
+					}
+					}; //end biographyCheck()
+        </script>
+    </head>
+	
+    <body id="body">
+		<form>
+			<fieldset id="fieldset">
+				<legend>Student Information:</legend>
+				<p margin-bottom="500px"><span id="error" ></span></p>
+				<p id="fields" >
+				First Name:
+				<input id="firstName" type="text" ><br><br>
+				Last Name:
+				<input id="lastName" type="text" ><br><br>
+				Student ID:
+				<input id="studentIdField" type="number" ><br><br>
+				Biography:
+				<textarea id= "biographyField" rows="5" cols="21" ></textarea><br><br>
+				<input id="submitButton" type="button" value="Submit" />
+				</p>
+				
+			</fieldset>
+		</form>
+	</body>
+</html>
