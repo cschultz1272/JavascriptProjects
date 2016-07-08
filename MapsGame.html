@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+    	h1   { text-align:center }
+  		html {  margin-left: 400px;height: 80%  }
+	    body { height: 95%; width:70%; margin: 0; padding: 0; background-color:aqua}
+		span {color:blue; font-size:20px; }
+  		#map-canvas { height: 100% }
+		#question {text-align:center;}
+		#rightWrong{color:blue; font-size:20px;}
+		#flyingText{font-size:20px; color:blue;}
+	</style>
+	
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=false">
+    </script>
+    <script type="text/javascript">
+
+	//Global Variables
+	var map;
+	var questionNumber = 0; //keeps track of what question to ask
+	var rightCount = 0;	//how many the user got right
+	var endMsg = null; //the animated text
+	var pixMoved =0; //how many pixels the end msg has moved
+    var animate ;
+	//end global variables
+	
+	//most of the program: gets called when you double click on the map
+	function doubleClicked(e) {
+		var lat = e.latLng.lat();
+		var lng = e.latLng.lng();
+		var lime = "lime";
+		var red = "red";
+		var rightWrong = document.getElementById("rightWrong"); //displays either right or wrong
+		
+		//locations array is location, north, south,east,west
+		var locations = [
+		["Jacaranda Hall", 34.242081, 34.240988, -118.527499, -118.529681 ],  
+		["the Oviatt Library", 34.240390, 34.239700, -118.528588, -118.530052 ],    
+		["the SRC Center", 34.240503, 34.239323, -118.524590, -118.525186 ], 
+		["the Pub", 34.239565, 34.239673,  -118.526574, -118.526775 ],   
+		["the Orange Grove", 34.235771, 34.237292, -118.524761, -118.527292]  
+		];
+		
+		//checks where the user clicked if its within the building coordinates its right else wrong
+		 if( questionNumber ===0 && lat>=34.240988 && lat<=34.242081  && lng<=-118.527499 && lng>=-118.529681){
+			 drawRect(locations[0], lime);
+			 changeQuestion(locations[1]);
+			 rightWrong.textContent = "RIGHT!"
+			 rightCount++;
+		}
+		else if(questionNumber ===0){
+				 drawRect(locations[0],red);
+				 changeQuestion(locations[1]);
+				 rightWrong.textContent = "WRONG! :\("
+				 anyWrong = true;
+			}
+		if(questionNumber===1 && lat>=34.239700 && lat<=34.240390 && lng<=-118.528588 && lng>=-118.530052){
+			 drawRect(locations[1], lime);
+			 changeQuestion(locations[2]);
+			 rightWrong.textContent = "RIGHT!"
+			 rightCount++;
+		}
+		else if(questionNumber ===1){
+				 drawRect(locations[1],red);
+				 changeQuestion(locations[2]);
+				 rightWrong.textContent = "WRONG! :\("
+				 anyWrong = true;
+			}
+		if(questionNumber ===2 && lat>=34.239323 && lat<=34.240503 && lng<=-118.524590 && lng>=-118.525186){
+			 drawRect(locations[2], lime);
+			 changeQuestion(locations[3]);
+			 rightWrong.textContent = "RIGHT!"
+			 rightCount++;
+		}
+		else if(questionNumber ===2){
+				 drawRect(locations[2],red);
+				 changeQuestion(locations[3]);
+				 rightWrong.textContent = "WRONG! :\("
+				 anyWrong = true;
+			}
+		if(questionNumber ===3 && lat>=34.239565 && lat<=34.239673 && lng<= -118.526574 && lng>=-118.526775 ){
+			 drawRect(locations[3], lime);
+			 changeQuestion(locations[4]);
+			 rightWrong.textContent = "RIGHT!"
+			 rightCount++;
+		}
+		else if(questionNumber ===3){
+				 drawRect(locations[3],red);
+				 changeQuestion(locations[4]);
+				 rightWrong.textContent = "WRONG! :\("
+				 anyWrong = true;
+			}
+		if(questionNumber ===4 && lat>=34.235771 && lat<=34.237292 && lng<=-118.524761 && lng>=-118.527292){
+			 drawRect(locations[4], lime);
+			 rightWrong.textContent = "RIGHT!"
+			 rightCount++;
+		}
+		else if(questionNumber ===4){
+			 drawRect(locations[4],red);
+			 rightWrong.textContent = "WRONG! :\("
+			 anyWrong = true;
+			 endText();
+		}
+		questionNumber++;
+	}; //end doubleClicked()
+	
+	function endText(){ //sets up the msg to be displayed at the end of the game
+		endMsg = document.getElementById("flyingText");
+		endMsg.textContent = "You scored " +rightCount+ " out of a possible 5 correct!";
+		endMsg.style.position= 'relative'; 
+		endMsg.style.left = '-1100px';  //start the msg off the screen 
+		moveRight(); //start the animation
+	}; // end endText()
+	
+	function moveRight(){
+		pixMoved +=10;
+		endMsg.style.left = parseInt(endMsg.style.left) + 10 + "px";
+        animate = setTimeout(moveRight,20); // call moveRight in 20msec
+		if(pixMoved === 1100){ //if its in the middle of the screen
+			clearTimeout(animate);
+		}   
+	}; //end moveRight()
+	
+	function drawRect(subLocations, rectColor){ //draw the rect around the building
+		var rectangle = new google.maps.Rectangle ( {
+			map: map,
+			bounds: { //the lat and lng coordinates passed in
+            north: subLocations[1],
+            south: subLocations[2],
+            east:   subLocations[3],
+            west:  subLocations[4]
+			},
+			fillColor:rectColor,
+			strokeColor: rectColor,
+		});
+	}; //end drawRect()
+	
+	function changeQuestion(subLocations){ //change to the next question
+		var thePlace = document.getElementById("place");
+		var firstQuestion = true;
+		thePlace.textContent= subLocations[0];
+	}; // end changeQuestion()
+	
+    function init()  { //load the page!
+    	var mapOptions = {
+		    zoom: 16,
+			scrollwheel: false,
+		    center: new google.maps.LatLng(34.239239, -118.5286312), //center on CSUN
+			//center: new google.maps.LatLng(37.09024, -119.4179324),
+		    mapTypeId: google.maps.MapTypeId.ROADMAP,
+			disableDoubleClickZoom: true, //Can't move the map around
+			disableDefaultUI: true,
+			zoomControl: false,
+			draggable: false
+	    };
+		
+		map = new google.maps.Map(document.getElementById("map-canvas"), 
+	  				mapOptions);
+								
+		google.maps.event.addListener(map, 'dblclick', doubleClicked);
+		
+		var thePlace = document.getElementById("place"); //set the first question to jacaranda hall
+			thePlace.textContent= "Jacaranda Hall";
+			
+			
+	
+    } //end init()
+    
+	window.addEventListener("load", init, false); 
+	
+    </script>
+  </head>
+  
+  <body>
+  <h1>CSUN Campus Game</h1>
+  <div id= "flyingText">&emsp; </div>
+  <p>"Can you find <span id="place"></span>? When you find it double click on it!"</p>
+  <div id="rightWrong">&emsp; </div>
+  <div id="map-canvas"></div>
+  </body>
+  </html>
+  
+  
+  
+  
